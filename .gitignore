@@ -1,0 +1,20 @@
+# MATCH
+**/*cache*
+**/*debug*
+**/*report*
+**/*log*
+**/*tool*
+**/*venv*
+**/.*
+!.gitignore
+
+# ASSIGN
+env-files
+
+# OTHER
+**/*.py[cod]
+**/*.so
+**/*.egg
+**/*.egg-info
+**/*.code-workspace
+**/*.bak
