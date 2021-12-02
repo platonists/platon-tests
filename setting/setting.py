@@ -2,6 +2,7 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+SCHEME = 'ws'
 NETWORK = 'private'
 
 # 部署链的配置文件
@@ -12,7 +13,7 @@ GENESIS_FILE = os.path.join(BASE_DIR, 'env-files/genesis.yml')
 PLATON = os.path.join(BASE_DIR, 'env-files/bin/platon')
 VERSION = '1.1.1'
 
-# 历史版本，通常使用线上版本     //用于验证从该历史版本升级到测试版本的过程
+# 历史版本，通常使用线上版本，用于验证从该历史版本升级到测试版本的过程
 HISTORY_PLATON = os.path.join(BASE_DIR, 'env-files/bin/history/platon')
 HISTORY_VERSION = '1.1.0'
 

@@ -1,17 +1,18 @@
 # init
 WORK_DIR="/home/shing/build-pips"
 CACHE_DIR="${WORK_DIR}/newpackage"
-CODE_DIR="/home/shing/github/platon-network/PlatON-Go"
+ CODE_DIR="/home/shing/github/platon-network/PlatON-Go"
+#CODE_DIR="/home/shing/github/alaya-network/Alaya-Go"
 VERSION_FILE="${CODE_DIR}/params/version.go"
 BIN_FILE='platon'
-TAR_FILE="platon-pips.tar.gz"
+TAR_FILE="${BIN_FILE}-pips.tar.gz"
 
 
 # get current version
 Major_Version=`sed -n 's/.*VersionMajor = \(\S\)/\1/p' ${VERSION_FILE} | awk '{print $1}'`
 Minor_Version=`sed -n 's/.*VersionMinor = \(\S\)/\1/p' ${VERSION_FILE} | awk '{print $1}'`
 Patch_Version=`sed -n 's/.*VersionPatch = \(\S\)/\1/p' ${VERSION_FILE} | awk '{print $1}'`
-Current_Version="${Major_Version}.${Major_Version}.${Major_Version}"
+Current_Version="${Major_Version}.${Minor_Version}.${Patch_Version}"
 
 
 # set target version
@@ -52,12 +53,12 @@ build_versions(){
     sed -i "s/VersionMajor = ${Major_Version}/VersionMajor = ${version_seq[0]}/" ${VERSION_FILE}
     sed -i "s/VersionMinor = ${Minor_Version}/VersionMinor = ${version_seq[1]}/" ${VERSION_FILE}
     sed -i "s/VersionPatch = ${Patch_Version}/VersionPatch = ${version_seq[2]}/" ${VERSION_FILE}
-    make clean && make platon
+    make clean && make ${BIN_FILE}
     save_dir="${CACHE_DIR}/${version_name}"
-    mkdir -p ${save_dir} && mv "${CODE_DIR}/build/bin/platon" "${save_dir}"
+    mkdir -p ${save_dir} && mv "${CODE_DIR}/build/bin/${BIN_FILE}" "${save_dir}"
     git checkout ${VERSION_FILE}
   done
-  mv "${CACHE_DIR}/version5/platon" "${CACHE_DIR}"
+  mv "${CACHE_DIR}/version5/${BIN_FILE}" "${CACHE_DIR}"
 }
 
 
