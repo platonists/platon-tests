@@ -11,10 +11,10 @@ if TYPE_CHECKING:
 
 class Aide(PlatonAide):
 
-    node: Node
-    host: Host
+    node: 'Node'
+    host: 'Host'
 
-    def __init__(self, node: Node):
+    def __init__(self, node: 'Node'):
         self.node = node
         self.host = node.host
         super().__init__(node.rpc(SCHEME))

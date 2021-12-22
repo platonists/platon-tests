@@ -1,7 +1,7 @@
 chain:
-  deploy_dir: platon
-  username: platon
-  password: 123456
+  deploy_dir: chain
+  username: shing
+  password: aa123456
   ssh_port: 22
   init:
     p2p_port: 16789
