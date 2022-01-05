@@ -17,4 +17,4 @@ class Aide(PlatonAide):
     def __init__(self, node: 'Node'):
         self.node = node
         self.host = node.host
-        super().__init__(node.rpc(SCHEME))
+        super().__init__(node.rpc(SCHEME), node.gql())
