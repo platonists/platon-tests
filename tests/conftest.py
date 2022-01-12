@@ -1,11 +1,15 @@
 import os.path
+import time
 from random import choice
 
 import pytest
+from client_sdk_python import Account
+from hexbytes import HexBytes
 from platon_env.chain import Chain
 
 from setting import setting
 from lib.funcs import assert_chain, get_aides
+from setting.setting import Master_prikey
 
 
 @pytest.fixture(scope='session')
@@ -18,9 +22,9 @@ def chain(request):
                   setting.NETWORK,
                   setting.GENESIS_FILE,
                   )
-
+    time.sleep(5)
     yield chain
-    chain.uninstall()
+    # chain.uninstall()
 
 
 @pytest.fixture
@@ -48,6 +52,7 @@ def defer_reset_chain(chain: Chain):
                   setting.NETWORK,
                   setting.GENESIS_FILE,
                   )
+    time.sleep(5)
 
 
 @pytest.fixture(scope='session')
@@ -58,7 +63,7 @@ def aides(chain: Chain):
 
 
 @pytest.fixture
-def random_aide(aides):
+def aide(aides):
     """ 返回一个随机节点的aide对象
     """
     return choice(aides)
@@ -75,21 +80,31 @@ def init_aides(chain: Chain):
 def init_aide(init_aides):
     """ 返回一个创世节点的aide对象
     """
-    return choice(init_aides)
+    init_aides = choice(init_aides)
+    account = Account().privateKeyToAccount(setting.Master_prikey)
+    init_aides.set_default_account(account)
+    return init_aides
 
 
 @pytest.fixture(scope='session')
 def normal_aides(chain: Chain):
     """ 返回链上普通节点的aide对象列表
     """
-    return get_aides(chain, 'normal')
+    normal_aides = get_aides(chain, 'normal')
+    for aide in normal_aides:
+        account = Account().privateKeyToAccount(setting.Master_prikey)
+        aide.set_default_account(account)
+    return normal_aides
 
 
 @pytest.fixture
 def normal_aide(normal_aides):
     """ 返回一个普通节点的aide对象
     """
-    return choice(normal_aides)
+    normal_aide = choice(normal_aides)
+    account = Account().privateKeyToAccount(setting.Master_prikey)
+    normal_aide.set_default_account(account)
+    return normal_aide
 
 
 @pytest.fixture
@@ -132,3 +147,23 @@ def wasm(node, request):
     file = ''
     assert os.path.isfile(file), ''
     return node.web3.platon.contract(vm_type='wasm')
+
+
+def generate_account(aide, balance=0):
+    account = aide.platon.account.create(hrp=aide.hrp)
+    address = account.address
+    prikey = account.privateKey.hex()[2:]
+    if balance != 0:
+        aide.transfer.transfer(address, balance)
+    return address, prikey
+
+
+def get_datahash(aide, txn, privatekey=Master_prikey):
+    if not txn.get('nonce'):
+        account = aide.web3.platon.account.from_key(privatekey, hrp=aide.web3.hrp)
+        nonce = aide.web3.platon.get_transaction_count(account.address)
+        txn['nonce'] = nonce
+
+    signed_txn = aide.web3.platon.account.sign_transaction(txn, privatekey, hrp=aide.web3.hrp)
+    data_hash = HexBytes(signed_txn.rawTransaction).hex()
+    return data_hash

@@ -1,3 +1,4 @@
+import math
 from typing import Literal
 
 from platon_env.chain import Chain
@@ -40,3 +41,49 @@ def get_aides(chain: Chain, _type: Literal['all', 'init', 'normal'] = 'all'):
         aides.append(Aide(node))
 
     return aides
+
+
+def get_switchpoint_by_settlement(aide, number=0):
+    """
+    Get the last block of the current billing cycle
+    :param node: node object
+    :param number: number of billing cycles
+    :return:
+    """
+    block_number = aide.economic.epoch_blocks * number
+    tmp_current_block = aide.platon.block_number
+    current_end_block = math.ceil(tmp_current_block / aide.economic.epoch_blocks) * aide.economic.epoch_blocks + block_number
+    return current_end_block
+
+
+
+def wait_settlement(aide, settlement=0):
+    """
+    Waiting for a billing cycle to settle
+    :param node:
+    :param number: number of billing cycles
+    :return:
+    """
+    end_block = get_switchpoint_by_settlement(aide, settlement)
+    aide.wait_block(end_block)
+
+
+def get_switchpoint_by_consensus(aide, consensus=0):
+    """
+    Get the last block of the current billing cycle
+    :param node: node object
+    :param consensus: consensus of billing cycles
+    :return:
+    """
+    block_number = aide.economic.consensus_blocks * consensus
+    tmp_current_block = aide.platon.block_number
+    current_end_block = math.ceil(tmp_current_block / aide.economic.consensus_blocks) * aide.economic.consensus_blocks + block_number
+    return current_end_block
+
+
+def wait_consensus(aide, consensus=0):
+    """
+    Waiting for a consensus round to end
+    """
+    end_block = get_switchpoint_by_consensus(aide, consensus)
+    aide.wait_block(end_block)
