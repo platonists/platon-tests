@@ -10,7 +10,7 @@ GENESIS_FILE = os.path.join(BASE_DIR, 'env-files/genesis.yml')
 
 # 当前测试版本
 PLATON = os.path.join(BASE_DIR, 'env-files/bin/platon')
-VERSION = '1.1.1'
+VERSION = '1.2.0'
 
 # 历史版本，通常使用线上版本     //用于验证从该历史版本升级到测试版本的过程
 HISTORY_PLATON = os.path.join(BASE_DIR, 'env-files/bin/history/platon')
