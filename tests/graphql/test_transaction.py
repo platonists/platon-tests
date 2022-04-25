@@ -38,12 +38,10 @@ def test_from(normal_aide):
 
 
 def test_to(normal_aide):
-    # todo: 网页可以用但是这里不知道为什么报错
     address = normal_aide.platon.account.create(hrp=normal_aide.hrp).address
     transfer_result = normal_aide.transfer.transfer(address, normal_aide.delegate._economic.delegate_limit)
     transfer_hash = transfer_result['transactionHash'].hex()
-    print(transfer_hash)
-    result = normal_aide.graphql.execute('{transaction(hash: "' + transfer_hash + '") {to(block:100){address transactionCount balance code storage(slot: "0xa98e6baea6233965a0740e20e626c5500ecf16121547e8255ee5a28a4f08fc57")}}}')
+    result = normal_aide.graphql.execute('{transaction(hash: "' + transfer_hash + '") {to(block:0){address transactionCount balance code storage(slot: "0xa98e6baea6233965a0740e20e626c5500ecf16121547e8255ee5a28a4f08fc57")}}}')
     to_address = result.get('transaction').get('to').get('address')
     assert address == to_address
 
