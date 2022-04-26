@@ -2,11 +2,12 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+SCHEME = 'http'     # ws/wss/http/https
 NETWORK = 'private'
 
 # 部署链的配置文件
 CHAIN_FILE = os.path.join(BASE_DIR, 'env-files/chain_file.yml')
-GENESIS_FILE = os.path.join(BASE_DIR, 'env-files/genesis.yml')
+GENESIS_FILE = os.path.join(BASE_DIR, 'env-files/genesis.json')
 
 # 当前测试版本
 PLATON = os.path.join(BASE_DIR, 'env-files/bin/platon')
