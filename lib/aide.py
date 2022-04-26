@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from platon_aide.main import PlatonAide
+from platon_aide import Aide
 
 from setting.setting import SCHEME
 
@@ -9,8 +9,7 @@ if TYPE_CHECKING:
     from platon_env.node import Node
 
 
-class Aide(PlatonAide):
-
+class Aide(Aide):
     node: 'Node'
     host: 'Host'
 

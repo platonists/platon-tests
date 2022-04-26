@@ -5,11 +5,15 @@ from random import choice
 import pytest
 from client_sdk_python import Account
 from hexbytes import HexBytes
+from platon_aide import Aide
 from platon_env.chain import Chain
 
 from setting import setting
 from lib.funcs import assert_chain, get_aides
-from setting.setting import Master_prikey
+from lib.account import MAIN_ACCOUNT
+from os.path import join
+
+from setting.setting import BASE_DIR
 
 
 @pytest.fixture(scope='session')
@@ -17,12 +21,14 @@ def chain(request):
     """ 返回链对象，不恢复环境，请谨慎使用
     """
     chain_file = request.config.getoption("--chainFile")
-    chain = Chain.from_file(chain_file)
+    chain = Chain.from_file(join(BASE_DIR, chain_file))
     chain.install(setting.PLATON,
                   setting.NETWORK,
                   setting.GENESIS_FILE,
                   )
-    time.sleep(5)
+    # todo：优化等待链出块的方式
+    time.sleep(3)
+
     yield chain
     # chain.uninstall()
 
@@ -52,7 +58,7 @@ def defer_reset_chain(chain: Chain):
                   setting.NETWORK,
                   setting.GENESIS_FILE,
                   )
-    time.sleep(5)
+    time.sleep(5)       # 等待链出块
 
 
 @pytest.fixture(scope='session')
@@ -63,7 +69,7 @@ def aides(chain: Chain):
 
 
 @pytest.fixture
-def aide(aides):
+def aide(aides) -> Aide:
     """ 返回一个随机节点的aide对象
     """
     return choice(aides)
@@ -157,13 +163,12 @@ def generate_account(aide, balance=0):
         aide.transfer.transfer(address, balance)
     return address, prikey
 
-
-def get_datahash(aide, txn, privatekey=Master_prikey):
-    if not txn.get('nonce'):
-        account = aide.web3.platon.account.from_key(privatekey, hrp=aide.web3.hrp)
-        nonce = aide.web3.platon.get_transaction_count(account.address)
-        txn['nonce'] = nonce
-
-    signed_txn = aide.web3.platon.account.sign_transaction(txn, privatekey, hrp=aide.web3.hrp)
-    data_hash = HexBytes(signed_txn.rawTransaction).hex()
-    return data_hash
+# def get_datahash(aide, txn, privatekey=Master_prikey):
+#     if not txn.get('nonce'):
+#         account = aide.web3.platon.account.from_key(privatekey, hrp=aide.web3.hrp)
+#         nonce = aide.web3.platon.get_transaction_count(account.address)
+#         txn['nonce'] = nonce
+#
+#     signed_txn = aide.web3.platon.account.sign_transaction(txn, privatekey, hrp=aide.web3.hrp)
+#     data_hash = HexBytes(signed_txn.rawTransaction).hex()
+#     return data_hash
