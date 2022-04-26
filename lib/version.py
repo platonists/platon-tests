@@ -1,7 +1,7 @@
 import os
 from typing import Tuple
 
-from setting.setting import VERSION, PIP_PKGS_DIR
+from setting.setting import VERSION, PIP_BIN_DIR
 
 
 def tuple_version(version: str):
@@ -24,7 +24,7 @@ class Version:
     def __init__(self, name: str, version: str, path: str = None):
         self.name = name
         self.version = version
-        self.path = path or os.path.join(PIP_PKGS_DIR, f'{self.name}/platon')
+        self.path = path or os.path.join(PIP_BIN_DIR, f'{self.name}/platon')
         # 私有变量
         self.__tuple = tuple_version(self.version)
         self.__int = int_version(self.__tuple)

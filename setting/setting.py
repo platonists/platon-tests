@@ -17,4 +17,4 @@ HISTORY_PLATON = os.path.join(BASE_DIR, 'env-files/bin/history/platon')
 HISTORY_VERSION = '1.1.0'
 
 # 治理测试版本
-PIP_PKGS_DIR = os.path.join(BASE_DIR, 'env-files/pip-pkgs')
+PIP_BIN_DIR = os.path.join(BASE_DIR, 'env-files/pip-bin')
