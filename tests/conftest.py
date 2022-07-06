@@ -30,7 +30,7 @@ def chain(request):
     time.sleep(3)
 
     yield chain
-    # chain.uninstall()
+    chain.uninstall()
 
 
 @pytest.fixture
@@ -87,8 +87,9 @@ def init_aide(init_aides):
     """ 返回一个创世节点的aide对象
     """
     init_aides = choice(init_aides)
-    account = Account().privateKeyToAccount(setting.Master_prikey)
-    init_aides.set_default_account(account)
+    # account = Account().privateKeyToAccount(setting.Master_prikey)
+    address, private_key = init_aides.create_account()
+    init_aides.set_default_account(address)
     return init_aides
 
 
@@ -98,8 +99,8 @@ def normal_aides(chain: Chain):
     """
     normal_aides = get_aides(chain, 'normal')
     for aide in normal_aides:
-        account = Account().privateKeyToAccount(setting.Master_prikey)
-        aide.set_default_account(account)
+        address, private_key = aide.create_account()
+        aide.set_default_account(address)
     return normal_aides
 
 
@@ -108,8 +109,6 @@ def normal_aide(normal_aides):
     """ 返回一个普通节点的aide对象
     """
     normal_aide = choice(normal_aides)
-    account = Account().privateKeyToAccount(setting.Master_prikey)
-    normal_aide.set_default_account(account)
     return normal_aide
 
 
