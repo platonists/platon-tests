@@ -30,7 +30,7 @@ def chain(request):
     time.sleep(3)
 
     yield chain
-    chain.uninstall()
+    # chain.uninstall()
 
 
 @pytest.fixture

@@ -63,15 +63,15 @@ def test_deploy_one_node_connect(init_aide, normal_aide):
     assert init_aide.platon.block_number > 0, "block height has not increased"
 
 
-def redeploy_one_node(normal_aide, genesis_file=None):
+def redeploy_one_node(aide_obj, genesis_file=None):
     """
     重新部署一个单节点
-    @param normal_aide: Node对象
+    @param aide_obj: Aide对象
     @param genesis_file: 有值则按文件部署，不传按当前节点信息修改创世文件
     @return: 当前节点修改后创建文件 or None
     """
     genesis_one_init_node_file = None
-    test_node = normal_aide.node
+    test_node = aide_obj.node
     if not genesis_file:
         genesis = Genesis(setting.GENESIS_FILE)
         genesis.fill_init_nodes(nodes=[test_node])
