@@ -1,8 +1,10 @@
+import copy
 import time
 import random
 
 import allure
 import pytest
+from deepdiff import DeepDiff
 from loguru import logger
 from platon_env.chain import Chain
 from platon_env.genesis import Genesis
@@ -74,33 +76,48 @@ def test_SC_CL_001(chain):
     chain_plugin_mixin.check_block(chain_plugin_mixin.init_aides[chain_plugin_mixin.max_byzantine_node:])
 
 
-@allure.title("Start 2f+1 nodes normally, start one after 50 seconds")
+@allure.title("Start 2f+1 nodes normally, start one after 30 seconds")
 @pytest.mark.P2
 def test_SC_IV_001(chain, init_aides):
     """
-    先启动2f+1, 50秒后启动1
-    """
-    _byzantine_node: int = (2 * max_byzantine_node(chain) + 1)
-    chain.uninstall()  # 不能使用stop redeploy 进程会被占用
+    @describe: 先启动2f+1, 30后再启动1个节点
 
-    new_chain = Chain(list(chain.init_nodes)[:_byzantine_node])
-    new_chain.install(setting.PLATON, setting.NETWORK,
-                      genesis_file=setting.GENESIS_FILE, )
-    time.sleep(50)
-    start_block_number = get_block_number([Aide(node) for node in new_chain.init_nodes])
-    print(start_block_number)
-    new_chain.install(setting.PLATON, setting.NETWORK,
-                      genesis_file=setting.GENESIS_FILE,
-                      nodes=list(chain.init_nodes)[_byzantine_node: _byzantine_node + 1])
-    new_chain.init_aides = [Aide(node) for node in list(new_chain.init_nodes)[:_byzantine_node + 1]]
-    check_block(aides=new_chain.init_aides, need_number=max(start_block_number) + 10, multiple=2)
-    # num = int(2 * global_test_env.max_byzantium + 1)
-    # log.info("Deploy {} nodes".format(num))
-    # test_nodes = global_test_env.consensus_node_list[0:num]
-    # global_test_env.deploy_nodes(node_list=test_nodes, genesis_file=global_test_env.cfg.genesis_tmp)
-    # time.sleep(50)
-    # start = max(global_test_env.block_numbers(node_list=test_nodes).values())
-    # global_test_env.deploy_nodes(global_test_env.consensus_node_list[num:num + 1],
-    #                              genesis_file=global_test_env.cfg.genesis_tmp)
-    # global_test_env.check_block(need_number=start + 10, multiple=2,
-    #                             node_list=global_test_env.consensus_node_list[0:num + 1])
+    @step:
+        - 清理链
+        - 重新部署三个共识节点,会根据当前传入节点修改创世文件
+        - 再部署一个节点,创世文件不改变 genesis_is_reset=False,指定连接节点 static_nodes=[i.enode for i in chain.init_nodes]
+
+    @expect:
+        - 部署三个节点 正常出块
+        - 后部署一个节点 end_aides_block_number > start_aides_block_number
+
+    @teardown: chain.uninstall() 清理链
+    """
+    start_aides_block_number: list = get_block_number(init_aides, detail=True)
+    logger.info(f"初始节点块高：{start_aides_block_number}")
+
+    _byzantine_node: int = (2 * max_byzantine_node(chain) + 1)
+
+    chain.install(setting.PLATON, setting.NETWORK, genesis_file=setting.GENESIS_FILE,
+                  nodes=list(chain.init_nodes)[:_byzantine_node])
+    time.sleep(30)
+    assert check_block(aides=init_aides[:_byzantine_node], need_number=10, multiple=3)
+    start_aides_block_number: list = get_block_number(init_aides[:_byzantine_node], detail=True)
+    logger.info(f"链上节点块高：{start_aides_block_number}")
+
+    chain.install(setting.PLATON, setting.NETWORK, genesis_file=setting.GENESIS_FILE, genesis_is_reset=False,
+                  static_nodes=[i.enode for i in chain.init_nodes],
+                  nodes=list(chain.init_nodes)[_byzantine_node: _byzantine_node + 1])
+    assert check_block(aides=init_aides[_byzantine_node:_byzantine_node + 1], need_number=10, multiple=3)
+
+    end_aides_block_number: list = get_block_number(init_aides[:_byzantine_node + 1], detail=True)
+    logger.info(f"链上节点块高：{end_aides_block_number}")
+
+
+
+    pass
+
+
+def test_node_block_numbers(chain, aides):
+    result = get_block_number(aides)
+    logger.info(f"{result}")

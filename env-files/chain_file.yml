@@ -7,15 +7,15 @@ chain:
     p2p_port: 12355
     options: '--rpc --rpcaddr 0.0.0.0 --rpcport 6789 --rpcapi web3,platon,txpool,net,admin,personal,debug --graphql --ws --wsaddr 0.0.0.0 --wsport 6790 --wsorigins "*" --wsapi web3,platon,txpool,net,admin,personal,debug'
     nodes:
-    - host: 192.168.16.121
-    - host: 192.168.16.122
-    - host: 192.168.16.123
-    - host: 192.168.16.124
+      - host: 192.168.16.121
+      - host: 192.168.16.122
+      - host: 192.168.16.123
+      - host: 192.168.16.124
   normal:
     p2p_port: 12366
     options: '--rpc --rpcaddr 0.0.0.0 --rpcport 7789 --rpcapi web3,platon,txpool,net,admin,personal,debug --graphql --ws --wsaddr 0.0.0.0 --wsport 7790 --wsorigins "*" --wsapi web3,platon,txpool,net,admin,personal,debug'
     nodes:
-    - host: 192.168.16.121
-    - host: 192.168.16.122
-    - host: 192.168.16.123
-    - host: 192.168.16.124
+      - host: 192.168.16.121
+      - host: 192.168.16.122
+      - host: 192.168.16.123
+      - host: 192.168.16.124

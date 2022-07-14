@@ -1,5 +1,5 @@
 import time
-from typing import List, Set
+from typing import List, Set, Dict
 from platon_env.node import Node
 
 from lib.aide import Aide
@@ -38,13 +38,17 @@ def check_block(aides: List[Aide], need_number=10, multiple=3):
 
     use_time = int(need_number * aides[0].economic.block_time * multiple)
     while use_time:
-        if max(get_block_number(aides)) < need_number:
+        block_number_list = get_block_number(aides)
+        if max(block_number_list) < need_number:
             time.sleep(1)
             use_time -= 1
             continue
-        return
+        return True
     raise Exception("The environment is not working properly")
 
 
-def get_block_number(aides):
-    return [aide.get_block_number for aide in aides]
+def get_block_number(aides, detail=False):
+    if detail:
+        return [{aide.uri.replace("http://", ""): aide.get_block_number} for aide in aides]
+    else:
+        return [aide.get_block_number for aide in aides]
